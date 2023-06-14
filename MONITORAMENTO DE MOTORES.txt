@@ -1,0 +1,153 @@
+namespace HENRIQUE
+
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            const int quantidadeMotores = 5;
+            Random random = new Random();
+            string[] meses = { "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" };
+            int mes = 1;
+            bool sair = false;
+
+            // Contador de meses com problemas para cada motor
+            int[] mesesComProblemas = new int[quantidadeMotores];
+
+            // Estado do motor: 0 - sem problemas, 1 - apresentou problema no mês atual, 2 - apresentou problema no mês anterior
+            int[] estadoMotor = new int[quantidadeMotores];
+
+            while (!sair)
+            {
+                Console.Clear();
+                Console.WriteLine("Monitoramento dos Motores Elétricos\n");
+
+                Console.WriteLine("Informações para o mês de {0}\n", meses[mes - 1]);
+
+                for (int i = 1; i <= quantidadeMotores; i++)
+                {
+                    Console.WriteLine("Motor {0}:", i);
+
+                    // Verificar estado do motor
+                    if (estadoMotor[i - 1] == 1)
+                    {
+                        Console.WriteLine("Nenhum problema detectado.");
+                        estadoMotor[i - 1] = 0; // Reiniciar o estado do motor para 0
+                    }
+                    else if (estadoMotor[i - 1] == 2)
+                    {
+                        Console.WriteLine("Motor apresentou problema no mês anterior. Nenhum problema detectado neste mês.");
+                        estadoMotor[i - 1] = 1; // Atualizar o estado do motor para 1 (apresentou problema neste mês)
+                    }
+                    else
+                    {
+                        // Verificar se o motor foi substituído e não terá mais problemas
+                        if (mesesComProblemas[i - 1] == -1)
+                        {
+                            Console.WriteLine("Motor substituído. Nenhum problema detectado.");
+                            Console.WriteLine();
+                            continue;
+                        }
+
+                        // Lista de problemas
+                        List<string> problemas = new List<string>
+            {
+                "Desgaste do rolamento do Motor",
+                "Desalinhamento do Motor",
+                "Sobrecarga do Motor",
+                "Tensão no eixo",
+                "Desbalanceamento de eixo",
+                "Transientes de tensão",
+                "Distorção de harmônicas",
+                "Corrente Sigma",
+                "Pé suave"
+            };
+
+                        // Verificar se há problema no motor
+                        bool temProblema = random.Next(2) == 0;
+
+                        if (temProblema)
+                        {
+                            // Selecionar um problema aleatório
+                            int indiceProblema = random.Next(problemas.Count);
+                            string problemaSelecionado = problemas[indiceProblema];
+
+                            // Gerar custo aleatório
+                            int custo = random.Next(100, 1001);
+
+                            // Exibir problema e custo
+                            Console.WriteLine("Problema: {0}", problemaSelecionado);
+                            Console.WriteLine("Custo: R$ {0}", custo);
+
+                            // Atualizar contador de meses com problemas para o motor
+                            mesesComProblemas[i - 1]++;
+
+                            // Verificar se o motor atingiu o limite de meses com problemas
+                            if (mesesComProblemas[i - 1] == 5)
+                            {
+                                Console.WriteLine("Motor {0} teve problemas em 5 meses consecutivos. O motor está danificado.", i);
+                                Console.WriteLine("Deseja comprar outro motor? (Digite 's' para sim, qualquer outra tecla para não)");
+                                var resposta = Console.ReadLine();
+
+                                if (resposta.ToLower() == "s")
+                                {
+                                    Console.WriteLine("Motor {0} substituído. Continuando a análise...", i);
+                                    mesesComProblemas[i - 1] = -1; // Definir o contador para -1 para indicar que o motor foi substituído
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Continuando a análise sem substituir o motor {0}...", i);
+                                    estadoMotor[i - 1] = 2; // Atualizar o estado do motor para 2 (apresentou problema no mês anterior)
+                                }
+
+                                Console.WriteLine();
+                            }
+                            else if (mesesComProblemas[i - 1] == 6)
+                            {
+                                Console.WriteLine("Motor {0} teve problemas em 6 meses consecutivos. O motor não funciona corretamente.", i);
+                                estadoMotor[i - 1] = -1; // Definir o estado do motor como danificado
+                                Console.WriteLine();
+                            }
+                            else
+                            {
+                                estadoMotor[i - 1] = 1; // Atualizar o estado do motor para 1 (apresentou problema neste mês)
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Nenhum problema detectado.");
+                            estadoMotor[i - 1] = 0; // Reiniciar o estado do motor para 0
+                        }
+                    }
+
+                    Console.WriteLine();
+                }
+
+                Console.WriteLine("Análise concluída para o mês de {0}.", meses[mes - 1]);
+                Console.WriteLine("Digite 's' para prosseguir para o próximo mês, ou qualquer outra tecla para finalizar a análise.");
+                var input = Console.ReadLine();
+
+                if (input.ToLower() == "s")
+                {
+                    mes++;
+
+                    if (mes > 12)
+                    {
+                        Console.WriteLine("Todos os meses foram analisados. Encerrando o programa...");
+                        sair = true;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Análise finalizada. Encerrando o programa...");
+                    sair = true;
+                }
+
+                Console.WriteLine();
+            }
+
+        }
+
+    }
+
+    }
